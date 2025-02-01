@@ -48,7 +48,7 @@ def on_created(event):
         if int(os.environ['FREQ']) < 54e6: # 6m and below
             freq = f"{int(os.environ['FREQ'])/1000:.0f}kHz"
         else:
-            freq = f"{int(os.environ['FREQ'])/1000000:.0f}MHz"
+            freq = f"{int(os.environ['FREQ'])/1000000:.3f}MHz"
 
         time.sleep(2)
         if event.src_path.endswith(".jp2"):
