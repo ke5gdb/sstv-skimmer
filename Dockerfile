@@ -15,7 +15,7 @@ RUN git clone https://github.com/miweber67/spyserver_client.git && cd spyserver_
 #csdr
 RUN cd / && git clone https://github.com/jketterl/csdr.git && cd csdr && git checkout master && mkdir -p build && cd build && cmake .. && make && make install && ldconfig
 # python dependencies
-RUN pip3 install Mastodon.py watchdog soundmeter requests
+RUN pip3 install Mastodon.py discord.py watchdog soundmeter requests
 #pulse server requiremeent
 RUN adduser root pulse-access
 
