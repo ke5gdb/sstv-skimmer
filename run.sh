@@ -46,7 +46,7 @@ then
 elif [ "$MODE" == "RTLFM" ]
 then
     echo "Using RTLSDR for FM reception"
-    rtl_fm -f $FREQ -s 22050 -F9 -M fm | aplay -r 22050 -f s16 -t raw -c 1 - &
+    rtl_fm -f $FREQ -s 22050 -F9 -M fm $DEV | aplay -r 22050 -f s16 -t raw -c 1 - &
 elif [ "$MODE" == "FM" ]
 then
     echo "Using NBFM via SpyServer"

@@ -32,6 +32,7 @@ These need to be in order for the skimmer to work
 | PORT | spy server port port                                                                                         |
 | FREQ | frequency for USB in HZ                                                                                      |
 | MODE | USB, LSB, FM, RTLFM                                                                                          |
+| DEV  | Device string (e.g. `-d 1`) for RTL-SDR
 | M_USERNAME | User name for mastodon instance                                                                        |
 | M_PASSWORD | Password for mastodon instance                                                                         |
 | M_URL |  Mastodon url eg : "https://botsin.space" (leave blank to disable)                                          |
