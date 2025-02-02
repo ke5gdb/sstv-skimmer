@@ -43,8 +43,11 @@ else:
     mastodon = None
 
 if "D_WH" in os.environ:
-    discord = SyncWebhook.from_url(os.environ["D_WH"])
-    print("Established Discord webhook")
+    webhooks = os.environ["D_WH"].split(',')
+    discord = []
+    for webhook in webhooks:
+        discord.append(SyncWebhook.from_url(webhook))
+    print("Established Discord webhook(s)")
 else:
     discord = None
 
@@ -74,11 +77,12 @@ try:
             mastodon.status_post(message, media_ids=media_ids, visibility="unlisted")
 
     if discord:
-        filename = args.image.split('/')[-1]
-        embed = Embed()
-        file = File(args.image, filename=filename)
-        embed.set_image(url=f"attachment://{filename}")
-        discord.send(content=message, file=file, embed=embed)
+        for d in discord:
+            filename = args.image.split('/')[-1]
+            embed = Embed()
+            file = File(args.image, filename=filename)
+            embed.set_image(url=f"attachment://{filename}")
+            d.send(content=message, file=file, embed=embed)
 
 except:
     print(traceback.format_exc())
