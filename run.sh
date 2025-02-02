@@ -5,6 +5,10 @@ set -u
 set -o pipefail
 set -x
 
+: "${HOST:=}"
+: "${PORT:=}"
+: "${FREQ:=144500000}"
+
 # allow exiting on SIGTERM
 trap "exit" SIGINT SIGTERM
 
@@ -21,12 +25,12 @@ pactl load-module module-null-sink sink_name=loopback
 pactl set-default-sink loopback
 
 # run qsstv
-xvfb-run qsstv &
+slowrxd -r 48000 -d /images -x /slowrx_post.sh &
 
 # run python masodon posting script
 export PYTHONUNBUFFERED=1
 echo "Starting poster"
-python3 /poster.py &
+# python3 /poster.py &
 
 #run spy client
 if [ "$MODE" == "LSB" ]
@@ -46,12 +50,19 @@ then
 elif [ "$MODE" == "RTLFM" ]
 then
     echo "Using RTLSDR for FM reception"
-    rtl_fm -f $FREQ -s 22050 -F9 -M fm $DEV | aplay -r 22050 -f s16 -t raw -c 1 - &
+    rtl_fm -f $FREQ -s 22050 -F9 -M fm $HOST | aplay -r 22050 -f s16 -t raw -c 1 - &
 elif [ "$MODE" == "FM" ]
 then
     echo "Using NBFM via SpyServer"
     ss_iq -a 12000 -r $HOST -q $PORT -f $FREQ -s 24000 -b 16 - | \
     csdr convert_s16_f |\
+    csdr fmdemod_quadri_cf | csdr limit_ff | csdr fastagc_ff | csdr convert_f_s16 |\
+    aplay -r 24000 -f s16 -t raw -c 1 - &
+elif [ "$MODE" == "KA9QFM" ]
+then
+    echo "Using KA9Q Radio for FM reception"
+    tune --samprate 24000 --mode iq --frequency $FREQ --ssrc $(($FREQ / 100)) --radio $HOST
+    pcmcat -s $(($FREQ / 100)) $HOST | csdr convert_s16_f |\
     csdr fmdemod_quadri_cf | csdr limit_ff | csdr fastagc_ff | csdr convert_f_s16 |\
     aplay -r 24000 -f s16 -t raw -c 1 - &
 else
